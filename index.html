@@ -127,7 +127,7 @@
         const min = minSel.value;
         const ampm = ampmSel.value;
         const time = (hour && min && ampm) ? hour + ':' + min + ' ' + ampm : '';
-        message += formatFieldLabel('Pick up time:') + ' ' + time + '\n';
+        message += formatFieldLabel('Pick up time:') + ' ' + time + '\n\n';
 
         // Locations
         message += formatFieldLabel('Pick up location:') + ' ' + (document.getElementById('pickup').value || '') + '\n';
