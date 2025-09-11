@@ -26,7 +26,7 @@
 <body>
   <div class="card">
     <!-- Top heading that must also appear in WhatsApp message -->
-    <h1 id="topHeading"><strong>* Taxi Booking - Please confirm *</strong></h1>
+    <h1 id="topHeading"><strong>*Taxi Booking Request*</strong></h1>
 
     <p class="subtitle">Fill the form and tap <em>Send to WhatsApp</em> to open WhatsApp with your booking details.</p>
 
@@ -133,7 +133,7 @@
         message += formatFieldLabel('Pick up location:') + ' ' + (document.getElementById('pickup').value || '') + '\n';
         message += formatFieldLabel('Drop location:') + ' ' + (document.getElementById('drop').value || '') + '\n\n';
 
-        message += 'Please confirm & reply.';
+        message += 'Please confirm.';
 
         const encoded = encodeURIComponent(message);
         const waLink = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
