@@ -10,14 +10,11 @@
     body{background:linear-gradient(180deg,#f7f9fb,#ffffff);display:flex;align-items:center;justify-content:center;padding:20px}
     .card{width:100%;max-width:520px;background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(20,30,60,0.08);padding:18px}
     h1{font-size:18px;margin:0 0 14px}
-    h2{font-size:16px;margin:0 8px 14px}
     .subtitle{font-size:14px;color:#555;margin-bottom:12px}
     label{display:block;margin:12px 0 6px;font-size:15px}
     label strong{font-weight:700}
-    input,select,textarea,output{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e6eef6;border-radius:10px;font-size:15px}
-    input[readonly]{background:#fbfdff}
-    .row{display:flex;gap:10px}
-    .row > *{flex:1}
+    input,select,textarea{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e6eef6;border-radius:10px;font-size:15px}
+    select{padding:10px 12px}
     .btn{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:var(--accent);color:#022;font-weight:700;font-size:16px;margin-top:14px}
     .note{font-size:13px;color:#666;margin-top:8px}
     .footer{font-size:12px;color:#888;text-align:center;margin-top:10px}
@@ -26,11 +23,8 @@
 </head>
 <body>
   <div class="card">
-    <!-- New heading as requested -->
-    <h2><strong>Taxi Booking Request</strong></h2>
-
-    <!-- Original top line (kept as requested earlier) -->
-    <h1><strong>* Taxi Booing - Please confirm *</strong></h1>
+    <!-- Keep only original top line -->
+    <h1><strong>* Taxi Booking - Please confirm *</strong></h1>
 
     <p class="subtitle">Fill the form and tap <em>Send to WhatsApp</em> to open WhatsApp with your booking details.</p>
 
@@ -38,13 +32,28 @@
 
       <label for="date"><strong>*Pick date:*</strong></label>
       <input id="date" name="date" type="date" required />
-      <!-- Display formatted date as dd-MMM-yyyy -->
-      <output id="dateDisplay" aria-live="polite" style="margin-top:8px;display:block"></output>
 
       <label for="time"><strong>*Pick up time:*</strong></label>
-      <input id="time" name="time" type="time" step="60" required />
-      <!-- Display formatted 12-hour time -->
-      <output id="timeDisplay" aria-live="polite" style="margin-top:8px;display:block"></output>
+      <div class="row">
+        <select id="hour" required>
+          <option value="">Hour</option>
+          <option>1</option><option>2</option><option>3</option><option>4</option>
+          <option>5</option><option>6</option><option>7</option><option>8</option>
+          <option>9</option><option>10</option><option>11</option><option>12</option>
+        </select>
+        <select id="minute" required>
+          <option value="">Min</option>
+          <option>00</option>
+          <option>15</option>
+          <option>30</option>
+          <option>45</option>
+        </select>
+        <select id="ampm" required>
+          <option value="">AM/PM</option>
+          <option>AM</option>
+          <option>PM</option>
+        </select>
+      </div>
 
       <label for="pickup"><strong>*Pick up location:*</strong></label>
       <input id="pickup" name="pickup" type="text" placeholder="Enter pick up address or landmark" required />
@@ -64,18 +73,15 @@
     (function(){
       const form = document.getElementById('taxiForm');
       const dateInput = document.getElementById('date');
-      const timeInput = document.getElementById('time');
-      const dateDisplay = document.getElementById('dateDisplay');
-      const timeDisplay = document.getElementById('timeDisplay');
+      const hourSel = document.getElementById('hour');
+      const minSel = document.getElementById('minute');
+      const ampmSel = document.getElementById('ampm');
 
-      // Use the exact phone number provided by user (international format, no plus sign)
       const phoneNumber = '917878781984';
-
       const monthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
       function formatDateToDDMMMYYYY(value){
         if(!value) return '';
-        // value is yyyy-mm-dd from input[type=date]
         const parts = value.split('-');
         if(parts.length !== 3) return value;
         const y = parts[0], m = parseInt(parts[1],10) - 1, d = parts[2];
@@ -83,68 +89,37 @@
         return d + '-' + month + '-' + y;
       }
 
-      function formatTimeTo12Hour(value){
-        if(!value) return '';
-        // value from input[type=time] is HH:MM (24-hour)
-        const parts = value.split(':');
-        if(parts.length < 2) return value;
-        let hh = parseInt(parts[0],10);
-        const mm = parts[1];
-        const ampm = hh >= 12 ? 'PM' : 'AM';
-        hh = hh % 12;
-        if(hh === 0) hh = 12;
-        return hh + ':' + mm + ' ' + ampm;
-      }
-
-      // Update live displays when inputs change
-      dateInput.addEventListener('input', function(){
-        dateDisplay.textContent = formatDateToDDMMMYYYY(this.value);
-      });
-
-      timeInput.addEventListener('input', function(){
-        timeDisplay.textContent = formatTimeTo12Hour(this.value);
-      });
-
-      // Initialize displays if browser autofills
-      if(dateInput.value) dateDisplay.textContent = formatDateToDDMMMYYYY(dateInput.value);
-      if(timeInput.value) timeDisplay.textContent = formatTimeTo12Hour(timeInput.value);
-
       function formatFieldLabel(label){
-        // Keep field label wrapped in * for WhatsApp bold formatting
         return '*' + label + '*';
       }
 
       form.addEventListener('submit', function(e){
         e.preventDefault();
-        const data = new FormData(form);
-        const rawDate = data.get('date') || '';
-        const rawTime = data.get('time') || '';
-        const pickup = data.get('pickup') || '';
-        const drop = data.get('drop') || '';
-
+        const rawDate = dateInput.value || '';
         const date = formatDateToDDMMMYYYY(rawDate);
-        const time = formatTimeTo12Hour(rawTime);
 
-        // Build the message. Field names are in bold using * on both sides (WhatsApp formatting).
+        const hour = hourSel.value;
+        const min = minSel.value;
+        const ampm = ampmSel.value;
+        const time = (hour && min && ampm) ? hour + ':' + min + ' ' + ampm : '';
+
+        const pickup = document.getElementById('pickup').value || '';
+        const drop = document.getElementById('drop').value || '';
+
         let message = '';
         message += formatFieldLabel('Pick date:') + ' ' + date + '\n';
         message += formatFieldLabel('Pick up time:') + ' ' + time + '\n';
         message += formatFieldLabel('Pick up location:') + ' ' + pickup + '\n';
         message += formatFieldLabel('Drop location:') + ' ' + drop + '\n';
+        message += '\nPlease confirm & reply.';
 
-        // Optional: add a confirm sentence at the end
-        message += '\n' + 'Please confirm & reply.';
-
-        // Encode and open WhatsApp. This works for Personal & Business on mobile and for WhatsApp Web on desktop.
         const encoded = encodeURIComponent(message);
         const waLink = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
         const appLink = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
 
-        // Try to open using the WhatsApp native URI first (more reliable on some mobiles), fallback to web link.
         window.location.href = appLink;
         setTimeout(function(){ window.location.href = waLink; }, 700);
       });
-
     })();
   </script>
 </body>
