@@ -15,6 +15,8 @@
     label strong{font-weight:700}
     input,select,textarea{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e6eef6;border-radius:10px;font-size:15px}
     select{padding:10px 12px}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
     .btn{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:var(--accent);color:#022;font-weight:700;font-size:16px;margin-top:14px}
     .note{font-size:13px;color:#666;margin-top:8px}
     .footer{font-size:12px;color:#888;text-align:center;margin-top:10px}
@@ -23,12 +25,19 @@
 </head>
 <body>
   <div class="card">
-    <!-- Keep only original top line -->
-    <h1><strong>* Taxi Booking - Please confirm *</strong></h1>
+    <!-- Top heading that must also appear in WhatsApp message -->
+    <h1 id="topHeading"><strong>* Taxi Booking - Please confirm *</strong></h1>
 
     <p class="subtitle">Fill the form and tap <em>Send to WhatsApp</em> to open WhatsApp with your booking details.</p>
 
     <form id="taxiForm">
+
+      <!-- New fields: Name and Mobile No (appearing after heading in form) -->
+      <label for="custName"><strong>*Name:*</strong></label>
+      <input id="custName" name="custName" type="text" placeholder="Your full name" required />
+
+      <label for="custMobile"><strong>*Mobile no:*</strong></label>
+      <input id="custMobile" name="custMobile" type="tel" placeholder="e.g. 9178xxxxxxx" required />
 
       <label for="date"><strong>*Pick date:*</strong></label>
       <input id="date" name="date" type="date" required />
@@ -66,7 +75,7 @@
       <p class="note">This opens WhatsApp (Personal or Business) on mobile. If you are on desktop it will open WhatsApp Web if available.</p>
     </form>
 
-    <div class="footer">Made for quick mobile bookings — copy this file to any GitHub repo and enable GitHub Pages (branch: main, folder: /) to share a public link.</div>
+    <!-- Footer line removed as requested -->
   </div>
 
   <script>
@@ -76,6 +85,9 @@
       const hourSel = document.getElementById('hour');
       const minSel = document.getElementById('minute');
       const ampmSel = document.getElementById('ampm');
+      const custName = document.getElementById('custName');
+      const custMobile = document.getElementById('custMobile');
+      const topHeading = document.getElementById('topHeading');
 
       const phoneNumber = '917878781984';
       const monthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -86,7 +98,9 @@
         if(parts.length !== 3) return value;
         const y = parts[0], m = parseInt(parts[1],10) - 1, d = parts[2];
         const month = monthsShort[m] || '';
-        return d + '-' + month + '-' + y;
+        // Ensure day is two-digit
+        const day = d.length === 1 ? '0'+d : d;
+        return day + '-' + month + '-' + y;
       }
 
       function formatFieldLabel(label){
@@ -95,31 +109,51 @@
 
       form.addEventListener('submit', function(e){
         e.preventDefault();
+
+        // Include heading exactly as shown (including asterisks)
+        let message = topHeading.textContent.trim() + '\n\n';
+
+        // Customer details
+        message += formatFieldLabel('Name:') + ' ' + (custName.value || '') + '\n';
+        message += formatFieldLabel('Mobile no:') + ' ' + (custMobile.value || '') + '\n\n';
+
+        // Date
         const rawDate = dateInput.value || '';
         const date = formatDateToDDMMMYYYY(rawDate);
+        message += formatFieldLabel('Pick date:') + ' ' + date + '\n';
 
+        // Time
         const hour = hourSel.value;
         const min = minSel.value;
         const ampm = ampmSel.value;
         const time = (hour && min && ampm) ? hour + ':' + min + ' ' + ampm : '';
-
-        const pickup = document.getElementById('pickup').value || '';
-        const drop = document.getElementById('drop').value || '';
-
-        let message = '';
-        message += formatFieldLabel('Pick date:') + ' ' + date + '\n';
         message += formatFieldLabel('Pick up time:') + ' ' + time + '\n';
-        message += formatFieldLabel('Pick up location:') + ' ' + pickup + '\n';
-        message += formatFieldLabel('Drop location:') + ' ' + drop + '\n';
-        message += '\nPlease confirm & reply.';
+
+        // Locations
+        message += formatFieldLabel('Pick up location:') + ' ' + (document.getElementById('pickup').value || '') + '\n';
+        message += formatFieldLabel('Drop location:') + ' ' + (document.getElementById('drop').value || '') + '\n\n';
+
+        message += 'Please confirm & reply.';
 
         const encoded = encodeURIComponent(message);
         const waLink = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
         const appLink = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
 
+        // Open app link first (mobile), fallback to web
         window.location.href = appLink;
         setTimeout(function(){ window.location.href = waLink; }, 700);
       });
+
+      // Optional: prefill today's date
+      try{
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        let mm = today.getMonth() + 1; if(mm < 10) mm = '0' + mm;
+        let dd = today.getDate(); if(dd < 10) dd = '0' + dd;
+        // set value as yyyy-mm-dd
+        dateInput.value = yyyy + '-' + mm + '-' + dd;
+      }catch(e){/* ignore */}
+
     })();
   </script>
 </body>
