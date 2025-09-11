@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Booking Form to WhatsApp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0; 
+            padding: 0;
+            background: #f2f2f2;
+        }
+        .container {
+            max-width: 400px;
+            margin: 30px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 24px 18px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        label {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+        input, textarea, button {
+            width: 100%;
+            font-size: 1.05rem;
+            padding: 12px 10px;
+            margin-bottom: 14px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: none;
+            height: 90px;
+        }
+        button {
+            background: #25d366;
+            color: #fff;
+            border: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.25s;
+        }
+        button:active {
+            background: #128c7e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Booking Form</h2>
+        <form id="whatsappForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required autocomplete="name">
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required autocomplete="email">
+
+            <label for="details">Booking Details:</label>
+            <textarea id="details" required></textarea>
+
+            <button type="submit">Send to WhatsApp</button>
+        </form>
+    </div>
+    <script>
+    document.getElementById("whatsappForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var name = document.getElementById("name").value.trim();
+    var email = document.getElementById("email").value.trim();
+    var details = document.getElementById("details").value.trim();
+
+    var message = "*Taxi Booking:* *Name:* " + name + " *Email:* " + email +  *Details:* " + details;
+    var phone = "+917878781984";
+    var waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(waLink, '_blank');
+});
+    </script>
+</body>
+</html>
