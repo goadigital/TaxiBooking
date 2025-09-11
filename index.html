@@ -1,87 +1,105 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Booking Form to WhatsApp</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0; 
-            padding: 0;
-            background: #f2f2f2;
-        }
-        .container {
-            max-width: 400px;
-            margin: 30px auto;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-            padding: 24px 18px;
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 18px;
-        }
-        label {
-            font-size: 1rem;
-            margin-bottom: 8px;
-            display: block;
-        }
-        input, textarea, button {
-            width: 100%;
-            font-size: 1.05rem;
-            padding: 12px 10px;
-            margin-bottom: 14px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-            box-sizing: border-box;
-        }
-        textarea {
-            resize: none;
-            height: 90px;
-        }
-        button {
-            background: #25d366;
-            color: #fff;
-            border: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background 0.25s;
-        }
-        button:active {
-            background: #128c7e;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Taxi Booking — Mobile Form</title>
+  <style>
+    :root{--accent:#0b7;--bg:#ffffff;--text:#111}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,#f7f9fb,#ffffff);display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{width:100%;max-width:520px;background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(20,30,60,0.08);padding:18px}
+    h1{font-size:18px;margin:0 0 14px}
+    .subtitle{font-size:14px;color:#555;margin-bottom:12px}
+    label{display:block;margin:12px 0 6px;font-size:15px}
+    label strong{font-weight:700}
+    input,select,textarea{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e6eef6;border-radius:10px;font-size:15px}
+    input[type=date], input[type=time]{padding:10px 12px}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    .btn{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:var(--accent);color:#022;font-weight:700;font-size:16px;margin-top:14px}
+    .note{font-size:13px;color:#666;margin-top:8px}
+    .footer{font-size:12px;color:#888;text-align:center;margin-top:10px}
+    @media (max-width:420px){.card{padding:14px}h1{font-size:16px}}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Booking Form</h2>
-        <form id="whatsappForm">
-            <label for="name">Name:</label>
-            <input type="text" id="name" required autocomplete="name">
+  <div class="card">
+    <!-- Line 1 heading as requested: include * on both sides and bold -->
+    <h1><strong>* Taxi Booing - Please confirm *</strong></h1>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" required autocomplete="email">
+    <p class="subtitle">Fill the form and tap <em>Send to WhatsApp</em> to open WhatsApp with your booking details.</p>
 
-            <label for="details">Booking Details:</label>
-            <textarea id="details" required></textarea>
+    <form id="taxiForm">
 
-            <button type="submit">Send to WhatsApp</button>
-        </form>
-    </div>
-    <script>
-    document.getElementById("whatsappForm").addEventListener("submit", function(e){
-    e.preventDefault();
-    var name = document.getElementById("name").value.trim();
-    var email = document.getElementById("email").value.trim();
-    var details = document.getElementById("details").value.trim();
+      <label for="date"><strong>*Pick date:*</strong></label>
+      <input id="date" name="date" type="date" required />
 
-    var message = "*Taxi Booking:* *Name:* " + name + " *Email:* " + email +  *Details:* " + details;
-    var phone = "+917878781984";
-    var waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-    window.open(waLink, '_blank');
-});
-    </script>
+      <label for="time"><strong>*Pick up time:*</strong></label>
+      <input id="time" name="time" type="time" required />
+
+      <label for="pickup"><strong>*Pick up location:*</strong></label>
+      <input id="pickup" name="pickup" type="text" placeholder="Enter pick up address or landmark" required />
+
+      <label for="drop"><strong>*Drop location:*</strong></label>
+      <input id="drop" name="drop" type="text" placeholder="Enter drop address or landmark" required />
+
+      <button type="submit" class="btn">Send to WhatsApp</button>
+
+      <p class="note">This opens WhatsApp (Personal or Business) on mobile. If you are on desktop it will open WhatsApp Web if available.</p>
+    </form>
+
+    <div class="footer">Made for quick mobile bookings — copy this file to any GitHub repo and enable GitHub Pages (branch: main, folder: /) to share a public link.</div>
+  </div>
+
+  <script>
+    (function(){
+      const form = document.getElementById('taxiForm');
+      // Use the exact phone number provided by user (international format, no plus sign)
+      const phoneNumber = '917878781984';
+
+      function formatFieldLabel(label){
+        // Keep field label wrapped in * for WhatsApp bold formatting
+        return '*' + label + '*';
+      }
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const data = new FormData(form);
+        const date = data.get('date') || '';
+        const time = data.get('time') || '';
+        const pickup = data.get('pickup') || '';
+        const drop = data.get('drop') || '';
+
+        // Build the message. Field names are in bold using * on both sides (WhatsApp formatting).
+        let message = '';
+        message += formatFieldLabel('Pick date:') + ' ' + date + '\n';
+        message += formatFieldLabel('Pick up time:') + ' ' + time + '\n';
+        message += formatFieldLabel('Pick up location:') + ' ' + pickup + '\n';
+        message += formatFieldLabel('Drop location:') + ' ' + drop + '\n';
+
+        // Optional: add a confirm sentence at the end
+        message += '\n' + 'Please confirm & reply.';
+
+        // Encode and open WhatsApp. This works for Personal & Business on mobile and for WhatsApp Web on desktop.
+        const encoded = encodeURIComponent(message);
+        const waLink = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
+
+        // Try to open using the WhatsApp native URI first (more reliable on some mobiles), fallback to web link.
+        const appLink = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
+
+        // Attempt to open appLink; if not allowed by browser, redirect to web link.
+        // Note: many browsers block a direct fallthrough check; we simply set location to appLink which on mobile will open app.
+        // If it fails, setting location to waLink will open WhatsApp Web or prompt the user.
+
+        // Best-effort: first try app protocol
+        window.location.href = appLink;
+
+        // After short delay, fallback to waLink. Delay needs to be short but non-zero.
+        setTimeout(function(){ window.location.href = waLink; }, 700);
+      });
+
+    })();
+  </script>
 </body>
 </html>
