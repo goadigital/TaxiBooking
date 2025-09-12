@@ -2,45 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <!-- viewport-fit=cover + responsive viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Taxi Booking — III Tour and Travel</title>
   <style>
     :root{
       --accent:#0b7;
-      --bg:#ffffff;
       --text:#111;
       --card-max-width:720px;
+      --hero-height-mobile:36vh; /* adjust to change hero height on small screens */
+      --hero-height-desktop:220px; /* adjust to change hero height on large screens */
+      --safe-top: env(safe-area-inset-top, 16px);
     }
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,#f7f9fb,#ffffff)}
-    /* Respect safe-area on iOS */
-    body{
-      min-height:100vh;
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:var(--text);
+      background: linear-gradient(180deg,#f7f9fb,#ffffff);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
       box-sizing:border-box;
-      padding-top: calc(env(safe-area-inset-top, 12px) + 8px);
-      padding-left: calc(env(safe-area-inset-left, 12px));
-      padding-right: calc(env(safe-area-inset-right, 12px));
+    }
+    *, *::before, *::after { box-sizing:inherit; }
+
+    /* Give the page a little top spacing so content won't hide under browser bars */
+    body {
+      padding-top: calc(var(--safe-top) + 8px);
+      padding-left: 12px;
+      padding-right: 12px;
       padding-bottom: calc(env(safe-area-inset-bottom, 12px));
       display:flex;
-      flex-direction:column;
-      align-items:center;
+      align-items:flex-start;
+      justify-content:center;
       gap:12px;
     }
 
-    /* Full-bleed image that uses entire viewport width */
-    .hero-wrap{
+    /* Full-bleed hero: stretches across entire viewport, and pushes down from top using safe area */
+    .hero-wrap {
       width:100vw;
       max-width:100vw;
-      margin-left: calc(50% - 50vw); /* center the full-bleed across viewport */
+      margin-left: calc(50% - 50vw);
+      /* provide an additional top offset so image is not covered by browser chrome */
+      padding-top: calc(var(--safe-top) + 8px);
+      background:transparent;
       overflow:hidden;
     }
-    .hero-wrap img{
+
+    /* Use a flexible hero height so object-fit:cover works well */
+    .hero-wrap img {
       display:block;
-      width:100vw;     /* fill the viewport width */
+      width:100vw;
       max-width:100vw;
-      height:auto;
+      height: var(--hero-height-mobile);
       object-fit:cover;
+      object-position:center;
       -webkit-user-select:none;
       user-select:none;
+    }
+
+    /* on larger screens use a fixed taller hero */
+    @media(min-width:720px){
+      .hero-wrap img {
+        height: var(--hero-height-desktop);
+      }
     }
 
     .card{
@@ -51,29 +77,35 @@
       box-shadow:0 6px 24px rgba(20,30,60,0.08);
       padding:18px;
       box-sizing:border-box;
-      margin:0 12px;
+      margin-top:12px;
     }
 
     h1{font-size:18px;margin:0 0 8px}
     .subtitle{font-size:14px;color:#555;margin-bottom:12px}
 
-    /* Labels are bold and show a visible red star for required fields */
+    /* Bold labels, visible red star to indicate required fields */
     label{
       display:block;
       margin:10px 0 6px;
       font-size:15px;
-      font-weight:700; /* bold label on form */
+      font-weight:700;
       color:#222;
     }
     label.required::after{
-      content: " *";
+      content:" *";
       color:#d33;
-      font-weight:700;
       margin-left:2px;
+      font-weight:700;
     }
 
     input,select,textarea{
-      width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e6eef6;border-radius:10px;font-size:15px;background:#fff;
+      width:100%;
+      box-sizing:border-box;
+      padding:12px 14px;
+      border:1px solid #e6eef6;
+      border-radius:10px;
+      font-size:15px;
+      background:#fff;
     }
     select{padding:10px 12px}
     .row{display:flex;gap:10px}
@@ -90,25 +122,25 @@
 </head>
 <body>
 
-  <!-- full width image (full-bleed) -->
+  <!-- full width image (hero) -->
   <div class="hero-wrap" aria-hidden="true">
-    <img src="thumbnail.jpeg" alt="III Tour & Travel — banner" />
+    <!-- Replace thumbnail.jpeg with your image. This fills the viewport width and uses object-fit:cover -->
+    <img src="thumbnail.jpeg" alt="III Tour & Travel — banner">
   </div>
 
-  <div class="card" role="main" aria-labelledby="formTitle">
+  <main class="card" role="main" aria-labelledby="formTitle">
     <h1 id="formTitle">Taxi Booking Request</h1>
     <p class="subtitle">Fill the form and tap <em>Send to WhatsApp</em> to open WhatsApp with your booking details.</p>
 
     <form id="taxiForm" novalidate>
-      <!-- labels are bold and have .required to show visible * on the page -->
       <label for="custName" class="required">Name</label>
-      <input id="custName" name="custName" type="text" placeholder="Your full name" required />
+      <input id="custName" name="custName" type="text" placeholder="Your full name" required>
 
       <label for="custMobile" class="required">Mobile no</label>
-      <input id="custMobile" name="custMobile" type="tel" placeholder="e.g. 9178xxxxxxx" pattern="[0-9+()\s-]{6,}" required />
+      <input id="custMobile" name="custMobile" type="tel" placeholder="e.g. 9178xxxxxxx" pattern="[0-9+()\s-]{6,}" required>
 
       <label for="date" class="required">Pick date</label>
-      <input id="date" name="date" type="date" required />
+      <input id="date" name="date" type="date" required>
 
       <label for="time" class="required">Pick up time</label>
       <div class="row">
@@ -130,10 +162,10 @@
       </div>
 
       <label for="pickup" class="required">Pick up location</label>
-      <input id="pickup" name="pickup" type="text" placeholder="Enter pick up address or landmark" required />
+      <input id="pickup" name="pickup" type="text" placeholder="Enter pick up address or landmark" required>
 
       <label for="drop" class="required">Drop location</label>
-      <input id="drop" name="drop" type="text" placeholder="Enter drop address or landmark" required />
+      <input id="drop" name="drop" type="text" placeholder="Enter drop address or landmark" required>
 
       <button type="submit" class="btn">Send to WhatsApp</button>
 
@@ -144,7 +176,7 @@
       Developed by:
       <a href="https://wa.me/919879876947?text=I%20need%20your%20help%20for%20my%20Business" target="_blank" rel="noopener noreferrer">GOA DIGITAL SERVICES</a>
     </div>
-  </div>
+  </main>
 
   <script>
     (function(){
@@ -156,7 +188,7 @@
       const custName = document.getElementById('custName');
       const custMobile = document.getElementById('custMobile');
 
-      // Put your WhatsApp number here (country code w/o +). Example: '919876543210'
+      // Replace with your WhatsApp number (country code without +)
       const phoneNumber = '917878781984';
 
       const monthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -171,16 +203,15 @@
         return day + '-' + month + '-' + y;
       }
 
-      // Wrap label text with '*' so WhatsApp shows bold
+      // Wrap label text with '*' so WhatsApp shows bold text.
       function starLabel(text){
         return '*' + text + '*';
       }
 
-      // Compose message: use label text (from visible labels) but add * around them for WhatsApp
       form.addEventListener('submit', function(e){
         e.preventDefault();
 
-        // simple front-end required check
+        // minimal front-end required validation
         if(!custName.value.trim() || !custMobile.value.trim() || !dateInput.value){
           alert('Please complete required fields: Name, Mobile and Pick date.');
           return;
@@ -211,12 +242,12 @@
         const waWeb = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
         const waApp = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
 
-        // try app scheme first, fallback to web after short delay
+        // Try opening native app first; fallback to web after a short delay
         window.location.href = waApp;
         setTimeout(function(){ window.location.href = waWeb; }, 700);
       });
 
-      // default date = today
+      // Default date = today
       try{
         const today = new Date();
         const yyyy = today.getFullYear();
