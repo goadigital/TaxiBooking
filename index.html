@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <!-- allow using safe-area insets on iOS (prevents content hidden under notch/address bar) -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Taxi Booking — III Tour and Travel</title>
   <style>
@@ -10,33 +9,38 @@
       --accent:#0b7;
       --bg:#ffffff;
       --text:#111;
-      --card-max-width:520px;
+      --card-max-width:720px;
     }
-
-    /* Basic reset */
-    html,body{
-      height:100%;
-      margin:0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      color:var(--text);
-      background: linear-gradient(180deg,#f7f9fb,#ffffff);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-
-    /* Respect safe-area insets (iOS notch / address bars). 
-       Use env() with fallback value for browsers that don't support it. */
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,#f7f9fb,#ffffff)}
+    /* Respect safe-area on iOS */
     body{
       min-height:100vh;
       box-sizing:border-box;
-      padding-top: calc(env(safe-area-inset-top, 20px) + 12px);
+      padding-top: calc(env(safe-area-inset-top, 12px) + 8px);
       padding-left: calc(env(safe-area-inset-left, 12px));
       padding-right: calc(env(safe-area-inset-right, 12px));
       padding-bottom: calc(env(safe-area-inset-bottom, 12px));
       display:flex;
-      align-items:flex-start; /* top align on small screens to avoid being pushed under address bar */
-      justify-content:center;
+      flex-direction:column;
+      align-items:center;
       gap:12px;
+    }
+
+    /* Full-bleed image that uses entire viewport width */
+    .hero-wrap{
+      width:100vw;
+      max-width:100vw;
+      margin-left: calc(50% - 50vw); /* center the full-bleed across viewport */
+      overflow:hidden;
+    }
+    .hero-wrap img{
+      display:block;
+      width:100vw;     /* fill the viewport width */
+      max-width:100vw;
+      height:auto;
+      object-fit:cover;
+      -webkit-user-select:none;
+      user-select:none;
     }
 
     .card{
@@ -47,82 +51,66 @@
       box-shadow:0 6px 24px rgba(20,30,60,0.08);
       padding:18px;
       box-sizing:border-box;
-      margin-bottom:20px;
-      overflow:hidden;
-    }
-
-    /* Top image: scale to card width, allow max-height, preserve aspect */
-    .top-image{
-      width:100%;
-      height:auto;
-      display:block;
-      object-fit:contain;
-      max-height:140px; /* prevents huge images on small screens */
-      margin:0 0 12px 0;
-      border-radius:8px;
-      background:transparent;
+      margin:0 12px;
     }
 
     h1{font-size:18px;margin:0 0 8px}
     .subtitle{font-size:14px;color:#555;margin-bottom:12px}
-    label{display:block;margin:10px 0 6px;font-size:15px;color:#333}
-    /* Don't show '*' in the form; visual required indicator left to browser using :required if you want */
-    input,select,textarea{
-      width:100%;
-      box-sizing:border-box;
-      padding:12px 14px;
-      border:1px solid #e6eef6;
-      border-radius:10px;
+
+    /* Labels are bold and show a visible red star for required fields */
+    label{
+      display:block;
+      margin:10px 0 6px;
       font-size:15px;
-      background: #fff;
+      font-weight:700; /* bold label on form */
+      color:#222;
+    }
+    label.required::after{
+      content: " *";
+      color:#d33;
+      font-weight:700;
+      margin-left:2px;
+    }
+
+    input,select,textarea{
+      width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e6eef6;border-radius:10px;font-size:15px;background:#fff;
     }
     select{padding:10px 12px}
     .row{display:flex;gap:10px}
     .row > *{flex:1}
-    .btn{
-      display:block;width:100%;padding:12px;border-radius:10px;border:0;
-      background:var(--accent);color:#022;font-weight:700;font-size:16px;margin-top:14px;
-    }
+    .btn{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:var(--accent);color:#022;font-weight:700;font-size:16px;margin-top:14px}
     .note{font-size:13px;color:#666;margin-top:8px}
     .footer{font-size:12px;color:#888;text-align:center;margin-top:14px}
 
-    /* mobile tweaks */
     @media (max-width:420px){
       .card{padding:14px}
       h1{font-size:16px}
-      .top-image{max-height:120px}
     }
-
-    /* optional: make required inputs outline to show user they are required (no * shown) */
-    input:required, select:required, textarea:required { box-shadow: inset 0 0 0 1px rgba(11,119,119,0.02); }
-
   </style>
 </head>
 <body>
-  <div class="card">
 
-    <!-- Top Image -->
-    <img src="thumbnail.jpeg" alt="Logo" class="top-image" />
+  <!-- full width image (full-bleed) -->
+  <div class="hero-wrap" aria-hidden="true">
+    <img src="thumbnail.jpeg" alt="III Tour & Travel — banner" />
+  </div>
 
-    <!-- Visible heading (no stars here) -->
-    <h1 id="topHeading">Taxi Booking Request</h1>
-
+  <div class="card" role="main" aria-labelledby="formTitle">
+    <h1 id="formTitle">Taxi Booking Request</h1>
     <p class="subtitle">Fill the form and tap <em>Send to WhatsApp</em> to open WhatsApp with your booking details.</p>
 
     <form id="taxiForm" novalidate>
-
-      <!-- New fields: Name and Mobile No (appearing after heading in form)
-           NOTICE: labels do NOT contain '*' — JS will add '*' only in the WhatsApp message -->
-      <label for="custName">Name</label>
+      <!-- labels are bold and have .required to show visible * on the page -->
+      <label for="custName" class="required">Name</label>
       <input id="custName" name="custName" type="text" placeholder="Your full name" required />
 
-      <label for="custMobile">Mobile no</label>
+      <label for="custMobile" class="required">Mobile no</label>
       <input id="custMobile" name="custMobile" type="tel" placeholder="e.g. 9178xxxxxxx" pattern="[0-9+()\s-]{6,}" required />
 
-      <label for="date">Pick date</label>
+      <label for="date" class="required">Pick date</label>
       <input id="date" name="date" type="date" required />
 
-      <label for="time">Pick up time</label>
+      <label for="time" class="required">Pick up time</label>
       <div class="row">
         <select id="hour" required>
           <option value="">Hour</option>
@@ -141,10 +129,10 @@
         </select>
       </div>
 
-      <label for="pickup">Pick up location</label>
+      <label for="pickup" class="required">Pick up location</label>
       <input id="pickup" name="pickup" type="text" placeholder="Enter pick up address or landmark" required />
 
-      <label for="drop">Drop location</label>
+      <label for="drop" class="required">Drop location</label>
       <input id="drop" name="drop" type="text" placeholder="Enter drop address or landmark" required />
 
       <button type="submit" class="btn">Send to WhatsApp</button>
@@ -152,12 +140,9 @@
       <p class="note">This opens WhatsApp (Personal or Business) on mobile. On desktop it will open WhatsApp Web if available.</p>
     </form>
 
-    <!-- Footer with link -->
     <div class="footer">
       Developed by:
-      <a href="https://wa.me/919879876947?text=I%20need%20your%20help%20for%20my%20Business" target="_blank" rel="noopener noreferrer">
-        GOA DIGITAL SERVICES
-      </a>
+      <a href="https://wa.me/919879876947?text=I%20need%20your%20help%20for%20my%20Business" target="_blank" rel="noopener noreferrer">GOA DIGITAL SERVICES</a>
     </div>
   </div>
 
@@ -170,9 +155,8 @@
       const ampmSel = document.getElementById('ampm');
       const custName = document.getElementById('custName');
       const custMobile = document.getElementById('custMobile');
-      const topHeading = document.getElementById('topHeading');
 
-      // replace with your phone (international format without + or leading zeros)
+      // Put your WhatsApp number here (country code w/o +). Example: '919876543210'
       const phoneNumber = '917878781984';
 
       const monthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -187,52 +171,52 @@
         return day + '-' + month + '-' + y;
       }
 
-      // Adds * around label text when building message (WhatsApp interprets *text* as bold)
-      function formatFieldLabel(label){
-        return '*' + label + '*';
+      // Wrap label text with '*' so WhatsApp shows bold
+      function starLabel(text){
+        return '*' + text + '*';
       }
 
-      // Build message with * only in the message (not visible on page)
+      // Compose message: use label text (from visible labels) but add * around them for WhatsApp
       form.addEventListener('submit', function(e){
         e.preventDefault();
 
-        // basic front-end validation: ensure required fields are filled
+        // simple front-end required check
         if(!custName.value.trim() || !custMobile.value.trim() || !dateInput.value){
-          alert('Please fill Name, Mobile and Pick date.');
+          alert('Please complete required fields: Name, Mobile and Pick date.');
           return;
         }
 
-        // Header: include as bold via surrounding stars
-        let message = formatFieldLabel(topHeading.textContent.trim()) + '\n\n';
+        const heading = starLabel(document.getElementById('formTitle').textContent.trim());
+        let message = heading + '\n\n';
 
-        message += formatFieldLabel('Name:') + ' ' + (custName.value || '') + '\n';
-        message += formatFieldLabel('Mobile no:') + ' ' + (custMobile.value || '') + '\n\n';
+        message += starLabel('Name:') + ' ' + (custName.value || '') + '\n';
+        message += starLabel('Mobile no:') + ' ' + (custMobile.value || '') + '\n\n';
 
         const rawDate = dateInput.value || '';
         const date = formatDateToDDMMMYYYY(rawDate);
-        message += formatFieldLabel('Pick date:') + ' ' + date + '\n';
+        message += starLabel('Pick date:') + ' ' + date + '\n';
 
         const hour = hourSel.value;
         const min = minSel.value;
         const ampm = ampmSel.value;
         const time = (hour && min && ampm) ? hour + ':' + min + ' ' + ampm : '';
-        message += formatFieldLabel('Pick up time:') + ' ' + time + '\n\n';
+        message += starLabel('Pick up time:') + ' ' + time + '\n\n';
 
-        message += formatFieldLabel('Pick up location:') + ' ' + (document.getElementById('pickup').value || '') + '\n';
-        message += formatFieldLabel('Drop location:') + ' ' + (document.getElementById('drop').value || '') + '\n\n';
+        message += starLabel('Pick up location:') + ' ' + (document.getElementById('pickup').value || '') + '\n';
+        message += starLabel('Drop location:') + ' ' + (document.getElementById('drop').value || '') + '\n\n';
 
         message += 'Please confirm.';
 
         const encoded = encodeURIComponent(message);
-        const waLink = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
-        const appLink = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
+        const waWeb = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
+        const waApp = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
 
-        // try opening native app first, fallback to web link after short delay
-        window.location.href = appLink;
-        setTimeout(function(){ window.location.href = waLink; }, 700);
+        // try app scheme first, fallback to web after short delay
+        window.location.href = waApp;
+        setTimeout(function(){ window.location.href = waWeb; }, 700);
       });
 
-      // set default date = today
+      // default date = today
       try{
         const today = new Date();
         const yyyy = today.getFullYear();
@@ -240,7 +224,6 @@
         let dd = today.getDate(); if(dd < 10) dd = '0' + dd;
         dateInput.value = yyyy + '-' + mm + '-' + dd;
       }catch(e){}
-
     })();
   </script>
 </body>
