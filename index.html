@@ -2,66 +2,137 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- allow using safe-area insets on iOS (prevents content hidden under notch/address bar) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Taxi Booking — III Tour and Travel</title>
   <style>
-    :root{--accent:#0b7;--bg:#ffffff;--text:#111}
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{background:linear-gradient(180deg,#f7f9fb,#ffffff);display:flex;align-items:center;justify-content:center;padding:20px}
-    .card{width:100%;max-width:520px;background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(20,30,60,0.08);padding:18px}
-    h1{font-size:18px;margin:0 0 14px}
+    :root{
+      --accent:#0b7;
+      --bg:#ffffff;
+      --text:#111;
+      --card-max-width:520px;
+    }
+
+    /* Basic reset */
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:var(--text);
+      background: linear-gradient(180deg,#f7f9fb,#ffffff);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Respect safe-area insets (iOS notch / address bars). 
+       Use env() with fallback value for browsers that don't support it. */
+    body{
+      min-height:100vh;
+      box-sizing:border-box;
+      padding-top: calc(env(safe-area-inset-top, 20px) + 12px);
+      padding-left: calc(env(safe-area-inset-left, 12px));
+      padding-right: calc(env(safe-area-inset-right, 12px));
+      padding-bottom: calc(env(safe-area-inset-bottom, 12px));
+      display:flex;
+      align-items:flex-start; /* top align on small screens to avoid being pushed under address bar */
+      justify-content:center;
+      gap:12px;
+    }
+
+    .card{
+      width:100%;
+      max-width:var(--card-max-width);
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 6px 24px rgba(20,30,60,0.08);
+      padding:18px;
+      box-sizing:border-box;
+      margin-bottom:20px;
+      overflow:hidden;
+    }
+
+    /* Top image: scale to card width, allow max-height, preserve aspect */
+    .top-image{
+      width:100%;
+      height:auto;
+      display:block;
+      object-fit:contain;
+      max-height:140px; /* prevents huge images on small screens */
+      margin:0 0 12px 0;
+      border-radius:8px;
+      background:transparent;
+    }
+
+    h1{font-size:18px;margin:0 0 8px}
     .subtitle{font-size:14px;color:#555;margin-bottom:12px}
-    label{display:block;margin:12px 0 6px;font-size:15px}
-    label strong{font-weight:700}
-    input,select,textarea{width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #e6eef6;border-radius:10px;font-size:15px}
+    label{display:block;margin:10px 0 6px;font-size:15px;color:#333}
+    /* Don't show '*' in the form; visual required indicator left to browser using :required if you want */
+    input,select,textarea{
+      width:100%;
+      box-sizing:border-box;
+      padding:12px 14px;
+      border:1px solid #e6eef6;
+      border-radius:10px;
+      font-size:15px;
+      background: #fff;
+    }
     select{padding:10px 12px}
     .row{display:flex;gap:10px}
     .row > *{flex:1}
-    .btn{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:var(--accent);color:#022;font-weight:700;font-size:16px;margin-top:14px}
+    .btn{
+      display:block;width:100%;padding:12px;border-radius:10px;border:0;
+      background:var(--accent);color:#022;font-weight:700;font-size:16px;margin-top:14px;
+    }
     .note{font-size:13px;color:#666;margin-top:8px}
     .footer{font-size:12px;color:#888;text-align:center;margin-top:14px}
-    .top-image{display:block;max-width:180px;margin:0 auto 12px auto}
-    @media (max-width:420px){.card{padding:14px}h1{font-size:16px}}
+
+    /* mobile tweaks */
+    @media (max-width:420px){
+      .card{padding:14px}
+      h1{font-size:16px}
+      .top-image{max-height:120px}
+    }
+
+    /* optional: make required inputs outline to show user they are required (no * shown) */
+    input:required, select:required, textarea:required { box-shadow: inset 0 0 0 1px rgba(11,119,119,0.02); }
+
   </style>
 </head>
 <body>
   <div class="card">
 
     <!-- Top Image -->
-    <img src="thumbnail.jpeg" alt="Logo" style="width:100%; height:auto; display:block; margin:0 auto; margin-top:20px;">
+    <img src="thumbnail.jpeg" alt="Logo" class="top-image" />
 
-    
-    <!-- Top heading that must also appear in WhatsApp message -->
-    <h1 id="topHeading"><strong>*Taxi Booking Request*</strong></h1>
+    <!-- Visible heading (no stars here) -->
+    <h1 id="topHeading">Taxi Booking Request</h1>
 
     <p class="subtitle">Fill the form and tap <em>Send to WhatsApp</em> to open WhatsApp with your booking details.</p>
 
-    <form id="taxiForm">
+    <form id="taxiForm" novalidate>
 
-      <!-- New fields: Name and Mobile No (appearing after heading in form) -->
-      <label for="custName"><strong>*Name:*</strong></label>
+      <!-- New fields: Name and Mobile No (appearing after heading in form)
+           NOTICE: labels do NOT contain '*' — JS will add '*' only in the WhatsApp message -->
+      <label for="custName">Name</label>
       <input id="custName" name="custName" type="text" placeholder="Your full name" required />
 
-      <label for="custMobile"><strong>*Mobile no:*</strong></label>
-      <input id="custMobile" name="custMobile" type="tel" placeholder="e.g. 9178xxxxxxx" required />
+      <label for="custMobile">Mobile no</label>
+      <input id="custMobile" name="custMobile" type="tel" placeholder="e.g. 9178xxxxxxx" pattern="[0-9+()\s-]{6,}" required />
 
-      <label for="date"><strong>*Pick date:*</strong></label>
+      <label for="date">Pick date</label>
       <input id="date" name="date" type="date" required />
 
-      <label for="time"><strong>*Pick up time:*</strong></label>
+      <label for="time">Pick up time</label>
       <div class="row">
         <select id="hour" required>
           <option value="">Hour</option>
-          <option>00</option><option>01</option><option>02</option><option>03</option><option>04</option>
-          <option>05</option><option>06</option><option>07</option><option>08</option>
-          <option>09</option><option>10</option><option>11</option><option>12</option>
+          <option>01</option><option>02</option><option>03</option><option>04</option><option>05</option>
+          <option>06</option><option>07</option><option>08</option><option>09</option><option>10</option>
+          <option>11</option><option>12</option>
         </select>
         <select id="minute" required>
           <option value="">Min</option>
-          <option>00</option>
-          <option>15</option>
-          <option>30</option>
-          <option>45</option>
+          <option>00</option><option>15</option><option>30</option><option>45</option>
         </select>
         <select id="ampm" required>
           <option value="">AM/PM</option>
@@ -70,21 +141,21 @@
         </select>
       </div>
 
-      <label for="pickup"><strong>*Pick up location:*</strong></label>
+      <label for="pickup">Pick up location</label>
       <input id="pickup" name="pickup" type="text" placeholder="Enter pick up address or landmark" required />
 
-      <label for="drop"><strong>*Drop location:*</strong></label>
+      <label for="drop">Drop location</label>
       <input id="drop" name="drop" type="text" placeholder="Enter drop address or landmark" required />
 
       <button type="submit" class="btn">Send to WhatsApp</button>
 
-      <p class="note">This opens WhatsApp (Personal or Business) on mobile. If you are on desktop it will open WhatsApp Web if available.</p>
+      <p class="note">This opens WhatsApp (Personal or Business) on mobile. On desktop it will open WhatsApp Web if available.</p>
     </form>
 
     <!-- Footer with link -->
     <div class="footer">
-      Developed by: 
-      <a href="https://wa.me/919879876947?text=I%20need%20your%20help%20for%20my%20Business" target="_blank">
+      Developed by:
+      <a href="https://wa.me/919879876947?text=I%20need%20your%20help%20for%20my%20Business" target="_blank" rel="noopener noreferrer">
         GOA DIGITAL SERVICES
       </a>
     </div>
@@ -101,7 +172,9 @@
       const custMobile = document.getElementById('custMobile');
       const topHeading = document.getElementById('topHeading');
 
+      // replace with your phone (international format without + or leading zeros)
       const phoneNumber = '917878781984';
+
       const monthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
       function formatDateToDDMMMYYYY(value){
@@ -114,14 +187,24 @@
         return day + '-' + month + '-' + y;
       }
 
+      // Adds * around label text when building message (WhatsApp interprets *text* as bold)
       function formatFieldLabel(label){
         return '*' + label + '*';
       }
 
+      // Build message with * only in the message (not visible on page)
       form.addEventListener('submit', function(e){
         e.preventDefault();
 
-        let message = topHeading.textContent.trim() + '\n\n';
+        // basic front-end validation: ensure required fields are filled
+        if(!custName.value.trim() || !custMobile.value.trim() || !dateInput.value){
+          alert('Please fill Name, Mobile and Pick date.');
+          return;
+        }
+
+        // Header: include as bold via surrounding stars
+        let message = formatFieldLabel(topHeading.textContent.trim()) + '\n\n';
+
         message += formatFieldLabel('Name:') + ' ' + (custName.value || '') + '\n';
         message += formatFieldLabel('Mobile no:') + ' ' + (custMobile.value || '') + '\n\n';
 
@@ -144,10 +227,12 @@
         const waLink = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
         const appLink = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
 
+        // try opening native app first, fallback to web link after short delay
         window.location.href = appLink;
         setTimeout(function(){ window.location.href = waLink; }, 700);
       });
 
+      // set default date = today
       try{
         const today = new Date();
         const yyyy = today.getFullYear();
@@ -155,6 +240,7 @@
         let dd = today.getDate(); if(dd < 10) dd = '0' + dd;
         dateInput.value = yyyy + '-' + mm + '-' + dd;
       }catch(e){}
+
     })();
   </script>
 </body>
