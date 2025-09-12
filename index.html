@@ -19,12 +19,17 @@
     .row > *{flex:1}
     .btn{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:var(--accent);color:#022;font-weight:700;font-size:16px;margin-top:14px}
     .note{font-size:13px;color:#666;margin-top:8px}
-    .footer{font-size:12px;color:#888;text-align:center;margin-top:10px}
+    .footer{font-size:12px;color:#888;text-align:center;margin-top:14px}
+    .top-image{display:block;max-width:180px;margin:0 auto 12px auto}
     @media (max-width:420px){.card{padding:14px}h1{font-size:16px}}
   </style>
 </head>
 <body>
   <div class="card">
+
+    <!-- Top Image -->
+    <img src="https://drive.google.com/uc?export=view&id=1JpFjafqvw2HvrX_6cCu2z1uqWU1w12aL" alt="Logo" class="top-image" />
+
     <!-- Top heading that must also appear in WhatsApp message -->
     <h1 id="topHeading"><strong>*Taxi Booking Request*</strong></h1>
 
@@ -75,7 +80,13 @@
       <p class="note">This opens WhatsApp (Personal or Business) on mobile. If you are on desktop it will open WhatsApp Web if available.</p>
     </form>
 
-    <!-- Footer line removed as requested -->
+    <!-- Footer with link -->
+    <div class="footer">
+      Developed by: 
+      <a href="https://wa.me/919879876947?text=I%20need%20your%20help%20for%20my%20Business" target="_blank">
+        GOA DIGITAL SERVICES
+      </a>
+    </div>
   </div>
 
   <script>
@@ -98,7 +109,6 @@
         if(parts.length !== 3) return value;
         const y = parts[0], m = parseInt(parts[1],10) - 1, d = parts[2];
         const month = monthsShort[m] || '';
-        // Ensure day is two-digit
         const day = d.length === 1 ? '0'+d : d;
         return day + '-' + month + '-' + y;
       }
@@ -110,26 +120,20 @@
       form.addEventListener('submit', function(e){
         e.preventDefault();
 
-        // Include heading exactly as shown (including asterisks)
         let message = topHeading.textContent.trim() + '\n\n';
-
-        // Customer details
         message += formatFieldLabel('Name:') + ' ' + (custName.value || '') + '\n';
         message += formatFieldLabel('Mobile no:') + ' ' + (custMobile.value || '') + '\n\n';
 
-        // Date
         const rawDate = dateInput.value || '';
         const date = formatDateToDDMMMYYYY(rawDate);
         message += formatFieldLabel('Pick date:') + ' ' + date + '\n';
 
-        // Time
         const hour = hourSel.value;
         const min = minSel.value;
         const ampm = ampmSel.value;
         const time = (hour && min && ampm) ? hour + ':' + min + ' ' + ampm : '';
         message += formatFieldLabel('Pick up time:') + ' ' + time + '\n\n';
 
-        // Locations
         message += formatFieldLabel('Pick up location:') + ' ' + (document.getElementById('pickup').value || '') + '\n';
         message += formatFieldLabel('Drop location:') + ' ' + (document.getElementById('drop').value || '') + '\n\n';
 
@@ -139,21 +143,17 @@
         const waLink = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
         const appLink = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
 
-        // Open app link first (mobile), fallback to web
         window.location.href = appLink;
         setTimeout(function(){ window.location.href = waLink; }, 700);
       });
 
-      // Optional: prefill today's date
       try{
         const today = new Date();
         const yyyy = today.getFullYear();
         let mm = today.getMonth() + 1; if(mm < 10) mm = '0' + mm;
         let dd = today.getDate(); if(dd < 10) dd = '0' + dd;
-        // set value as yyyy-mm-dd
         dateInput.value = yyyy + '-' + mm + '-' + dd;
-      }catch(e){/* ignore */}
-
+      }catch(e){}
     })();
   </script>
 </body>
