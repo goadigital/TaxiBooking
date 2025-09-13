@@ -9,8 +9,6 @@
       --accent:#0b7;
       --text:#111;
       --card-max-width:720px;
-      --hero-height-mobile:36vh;
-      --hero-height-desktop:220px;
       --safe-top: env(safe-area-inset-top, 16px);
     }
 
@@ -51,27 +49,29 @@
       width: 100%;
       margin: 0;
       padding-top: 0;
-      background: transparent;
+      background: #eaeaea;
       overflow: hidden;
       border-radius: 12px 12px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .hero-wrap img {
       display: block;
       width: 100%;
       max-width: 100%;
-      height: var(--hero-height-mobile);
-      object-fit: cover;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
       object-position: center;
       border-radius: 12px 12px 0 0;
+      background: #eaeaea;
       -webkit-user-select: none;
       user-select: none;
     }
 
     @media(min-width: 720px) {
-      .hero-wrap img {
-        height: var(--hero-height-desktop);
-      }
       .container {
         margin-top: 32px;
       }
@@ -126,25 +126,19 @@
 </head>
 <body>
   <div class="container">
-    <!-- Image above the form, full width inside container -->
     <div class="hero-wrap" aria-hidden="true">
       <img src="thumbnail.png" alt="III Tour & Travel — banner">
     </div>
-
     <main class="card" role="main" aria-labelledby="formTitle">
       <h1 id="formTitle">Taxi Booking Request</h1>
       <p class="subtitle">Fill the form and tap <em>Send to WhatsApp</em> to open WhatsApp with your booking details.</p>
-
       <form id="taxiForm" novalidate>
         <label for="custName" class="required">Name</label>
         <input id="custName" name="custName" type="text" placeholder="Your full name" required>
-
         <label for="custMobile" class="required">Mobile no</label>
         <input id="custMobile" name="custMobile" type="tel" placeholder="e.g. 9178xxxxxxx" pattern="[0-9+()\s-]{6,}" required>
-
         <label for="date" class="required">Pick date</label>
         <input id="date" name="date" type="date" required>
-
         <label for="time" class="required">Pick up time</label>
         <div class="row">
           <select id="hour" required>
@@ -163,17 +157,13 @@
             <option>PM</option>
           </select>
         </div>
-
         <label for="pickup" class="required">Pick up location</label>
         <input id="pickup" name="pickup" type="text" placeholder="Enter pick up address or landmark" required>
-
         <label for="drop" class="required">Drop location</label>
         <input id="drop" name="drop" type="text" placeholder="Enter drop address or landmark" required>
-
         <button type="submit" class="btn">Send to WhatsApp</button>
         <p class="note">This opens WhatsApp (Personal or Business) on mobile. On desktop it will open WhatsApp Web if available.</p>
       </form>
-
       <div class="footer">
         Developed by:
         <a href="https://wa.me/919879876947?text=I%20need%20your%20help%20for%20my%20Business" target="_blank" rel="noopener noreferrer">GOA DIGITAL SERVICES</a>
@@ -197,7 +187,7 @@
         if(!value) return '';
         const parts = value.split('-');
         if(parts.length !== 3) return value;
-        const y = parts, m = parseInt(parts,10) - 1, d = parts;
+        const y = parts, m = parseInt(parts[3],10) - 1, d = parts[4];
         const month = monthsShort[m] || '';
         const day = d.length === 1 ? '0'+d : d;
         return day + '-' + month + '-' + y;
@@ -209,3 +199,42 @@
 
       form.addEventListener('submit', function(e){
         e.preventDefault();
+
+        if(!custName.value.trim() || !custMobile.value.trim() || !dateInput.value){
+          alert('Please complete required fields: Name, Mobile and Pick date.');
+          return;
+        }
+
+        const heading = starLabel(document.getElementById('formTitle').textContent.trim());
+        let message = heading + '\n\n';
+        message += starLabel('Name:') + ' ' + (custName.value || '') + '\n';
+        message += starLabel('Mobile no:') + ' ' + (custMobile.value || '') + '\n\n';
+        const rawDate = dateInput.value || '';
+        const date = formatDateToDDMMMYYYY(rawDate);
+        message += starLabel('Pick date:') + ' ' + date + '\n';
+        const hour = hourSel.value;
+        const min = minSel.value;
+        const ampm = ampmSel.value;
+        const time = (hour && min && ampm) ? hour + ':' + min + ' ' + ampm : '';
+        message += starLabel('Pick up time:') + ' ' + time + '\n\n';
+        message += starLabel('Pick up location:') + ' ' + (document.getElementById('pickup').value || '') + '\n';
+        message += starLabel('Drop location:') + ' ' + (document.getElementById('drop').value || '') + '\n\n';
+        message += 'Please confirm.';
+        const encoded = encodeURIComponent(message);
+        const waWeb = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
+        const waApp = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
+        window.location.href = waApp;
+        setTimeout(function(){ window.location.href = waWeb; }, 700);
+      });
+
+      try {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        let mm = today.getMonth() + 1; if(mm < 10) mm = '0' + mm;
+        let dd = today.getDate(); if(dd < 10) dd = '0' + dd;
+        dateInput.value = yyyy + '-' + mm + '-' + dd;
+      } catch(e){}
+    })();
+  </script>
+</body>
+</html>
