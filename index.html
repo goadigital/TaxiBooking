@@ -5,10 +5,10 @@
   <!-- Update these variables for customer: -->
   <script>
     var whatsappNo = '917878781984'; // Update WhatsApp Number
-    var previewImage = 'thumbnail.png'; // Update Image Path (shown in link preview)
+    var previewImage = '/thumbnail.png'; // Added leading slash for better path detection
   </script>
   <!-- WhatsApp preview when link is shared -->
-  <meta property="og:image" content="thumbnail.png" />
+  <meta property="og:image" content="/thumbnail.png" /> <!-- Changed to leading slash path -->
   <meta property="og:image:width" content="720" />
   <meta property="og:image:height" content="405" />
   <meta property="og:title" content="Taxi Booking — III Tour and Travel" />
@@ -129,7 +129,7 @@
       color: #c00;
       font-size: 15px;
       margin-top: 20px;
-      display: none;
+      display: none; /* Keep hidden by default */
     }
     .wa-call {
       display: inline-block;
@@ -152,7 +152,7 @@
 <body>
   <div class="container">
     <div class="hero-wrap" aria-hidden="true">
-      <img src="thumbnail.png" alt="III Tour & Travel — banner">
+      <img src="/thumbnail.png" alt="III Tour & Travel — banner">  <!-- Added leading slash -->
     </div>
     <main class="card" role="main" aria-labelledby="formTitle">
       <h1 id="formTitle">Taxi Booking Request</h1>
@@ -203,7 +203,7 @@
   <script>
     // Variables for customer
     var phoneNumber = (typeof whatsappNo !== "undefined") ? whatsappNo : '917878781984';
-    var previewImgUrl = (typeof previewImage !== "undefined") ? previewImage : 'thumbnail.png';
+    var previewImgUrl = (typeof previewImage !== "undefined") ? previewImage : '/thumbnail.png';
 
     const form = document.getElementById('taxiForm');
     const dateInput = document.getElementById('date');
