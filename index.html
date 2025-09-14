@@ -2,6 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <!-- Update these variables for customer: -->
+  <script>
+    var whatsappNo = '917878781984'; // Update WhatsApp Number
+    var previewImage = 'thumbnail.png'; // Update Image Path (shown in link preview)
+  </script>
+  <!-- WhatsApp preview when link is shared -->
+  <meta property="og:image" content="thumbnail.png" />
+  <meta property="og:image:width" content="720" />
+  <meta property="og:image:height" content="405" />
+  <meta property="og:title" content="Taxi Booking — III Tour and Travel" />
+  <meta property="og:description" content="Book your taxi instantly with III Tour and Travel" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Taxi Booking — III Tour and Travel</title>
   <style>
@@ -11,7 +22,6 @@
       --card-max-width:720px;
       --safe-top: env(safe-area-inset-top, 16px);
     }
-
     html,body {
       height:100%;
       margin:0;
@@ -23,7 +33,6 @@
       box-sizing:border-box;
     }
     *, *::before, *::after { box-sizing:inherit; }
-
     body {
       padding-top: calc(var(--safe-top) + 8px);
       padding-left: 12px;
@@ -35,7 +44,6 @@
       gap: 12px;
       min-height: 100vh;
     }
-
     .container {
       width: 100%;
       max-width: var(--card-max-width);
@@ -44,7 +52,6 @@
       align-items: stretch;
       margin: 0 auto;
     }
-
     .hero-wrap {
       width: 100%;
       margin: 0;
@@ -56,7 +63,6 @@
       align-items: center;
       justify-content: center;
     }
-
     .hero-wrap img {
       display: block;
       width: 100%;
@@ -70,13 +76,11 @@
       -webkit-user-select: none;
       user-select: none;
     }
-
     @media(min-width: 720px) {
       .container {
         margin-top: 32px;
       }
     }
-
     .card {
       width: 100%;
       background: #fff;
@@ -86,7 +90,6 @@
       box-sizing: border-box;
       margin-top: 0;
     }
-
     h1 { font-size:18px; margin:0 0 8px }
     .subtitle { font-size:14px; color:#555; margin-bottom:12px }
     label {
@@ -117,7 +120,29 @@
     .btn { display:block; width:100%; padding:12px; border-radius:10px; border:0; background:var(--accent); color:#022; font-weight:700; font-size:16px; margin-top:14px }
     .note { font-size:13px; color:#666; margin-top:8px }
     .footer { font-size:12px; color:#888; text-align:center; margin-top:14px }
-
+    .wa-fallback {
+      text-align: center;
+      padding: 18px;
+      background: #fff3f1;
+      border-radius: 10px;
+      border: 1px solid #ffd1c1;
+      color: #c00;
+      font-size: 15px;
+      margin-top: 20px;
+      display: none;
+    }
+    .wa-call {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 24px;
+      font-size: 16px;
+      background: var(--accent);
+      color: #022;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+    }
     @media (max-width:420px) {
       .card { padding:14px }
       h1 { font-size:16px }
@@ -168,73 +193,105 @@
         Developed by:
         <a href="https://wa.me/919879876947?text=I%20need%20your%20help%20for%20my%20Business" target="_blank" rel="noopener noreferrer">GOA DIGITAL SERVICES</a>
       </div>
+      <div class="wa-fallback" id="waFallback">
+        WhatsApp is not installed or not opened in browser.<br>
+        You need to install WhatsApp or open WhatsApp Web in your browser.<br>
+        <a class="wa-call" id="callBtn" target="_blank" rel="noopener noreferrer">Call Now</a>
+      </div>
     </main>
   </div>
   <script>
-    (function(){
-      const form = document.getElementById('taxiForm');
-      const dateInput = document.getElementById('date');
-      const hourSel = document.getElementById('hour');
-      const minSel = document.getElementById('minute');
-      const ampmSel = document.getElementById('ampm');
-      const custName = document.getElementById('custName');
-      const custMobile = document.getElementById('custMobile');
+    // Variables for customer
+    var phoneNumber = (typeof whatsappNo !== "undefined") ? whatsappNo : '917878781984';
+    var previewImgUrl = (typeof previewImage !== "undefined") ? previewImage : 'thumbnail.png';
 
-      const phoneNumber = '917878781984';
-      const monthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const form = document.getElementById('taxiForm');
+    const dateInput = document.getElementById('date');
+    const hourSel = document.getElementById('hour');
+    const minSel = document.getElementById('minute');
+    const ampmSel = document.getElementById('ampm');
+    const custName = document.getElementById('custName');
+    const custMobile = document.getElementById('custMobile');
+    const waFallback = document.getElementById('waFallback');
+    const callBtn = document.getElementById('callBtn');
 
-      function formatDateToDDMMMYYYY(value){
-        if(!value) return '';
-        const parts = value.split('-');
-        if(parts.length !== 3) return value;
-        const y = parts, m = parseInt(parts[3],10) - 1, d = parts[4];
-        const month = monthsShort[m] || '';
-        const day = d.length === 1 ? '0'+d : d;
-        return day + '-' + month + '-' + y;
+    // Set call button href at runtime
+    callBtn.href = 'tel:+' + phoneNumber;
+
+    const monthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function formatDateToDDMMMYYYY(value){
+      if(!value) return '';
+      const parts = value.split('-');
+      if(parts.length !== 3) return value;
+      const y = parts[0], m = parseInt(parts[1],10) - 1, d = parts[2];
+      const month = monthsShort[m] || '';
+      const day = d.length === 1 ? '0'+d : d;
+      return day + '-' + month + '-' + y;
+    }
+    function starLabel(text){ return '*' + text + '*'; }
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+
+      if(!custName.value.trim() || !custMobile.value.trim() || !dateInput.value){
+        alert('Please complete required fields: Name, Mobile and Pick date.');
+        return;
       }
 
-      function starLabel(text){
-        return '*' + text + '*';
+      let message = starLabel('Taxi Booking Request') + '\n\n';
+      message += starLabel('Name') + ': ' + (custName.value || '') + '\n';
+      message += starLabel('Mobile no') + ': ' + (custMobile.value || '') + '\n\n';
+      const rawDate = dateInput.value || '';
+      const date = formatDateToDDMMMYYYY(rawDate);
+      message += starLabel('Pick date') + ': ' + date + '\n';
+      const hour = hourSel.value;
+      const min = minSel.value;
+      const ampm = ampmSel.value;
+      const time = (hour && min && ampm) ? hour + ':' + min + ' ' + ampm : '';
+      message += starLabel('Pick up time') + ': ' + time + '\n\n';
+      message += starLabel('Pick up location') + ': ' + (document.getElementById('pickup').value || '') + '\n';
+      message += starLabel('Drop location') + ': ' + (document.getElementById('drop').value || '') + '\n\n';
+      message += 'Please confirm.';
+
+      // Encode for WhatsApp URL
+      const encoded = encodeURIComponent(message);
+
+      const waWeb = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
+      const waApp = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
+
+      // Try opening Whatsapp app on mobile
+      let attempted = false;
+      function fallback(){
+        if(attempted) return;
+        attempted = true;
+        // Show fallback message & call button
+        waFallback.style.display = 'block';
       }
 
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-
-        if(!custName.value.trim() || !custMobile.value.trim() || !dateInput.value){
-          alert('Please complete required fields: Name, Mobile and Pick date.');
-          return;
-        }
-
-        const heading = starLabel(document.getElementById('formTitle').textContent.trim());
-        let message = heading + '\n\n';
-        message += starLabel('Name:') + ' ' + (custName.value || '') + '\n';
-        message += starLabel('Mobile no:') + ' ' + (custMobile.value || '') + '\n\n';
-        const rawDate = dateInput.value || '';
-        const date = formatDateToDDMMMYYYY(rawDate);
-        message += starLabel('Pick date:') + ' ' + date + '\n';
-        const hour = hourSel.value;
-        const min = minSel.value;
-        const ampm = ampmSel.value;
-        const time = (hour && min && ampm) ? hour + ':' + min + ' ' + ampm : '';
-        message += starLabel('Pick up time:') + ' ' + time + '\n\n';
-        message += starLabel('Pick up location:') + ' ' + (document.getElementById('pickup').value || '') + '\n';
-        message += starLabel('Drop location:') + ' ' + (document.getElementById('drop').value || '') + '\n\n';
-        message += 'Please confirm.';
-        const encoded = encodeURIComponent(message);
-        const waWeb = 'https://wa.me/' + phoneNumber + '?text=' + encoded;
-        const waApp = 'whatsapp://send?phone=' + phoneNumber + '&text=' + encoded;
+      // Try native app, then fallback to web after short delay
+      let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if(isMobile){
         window.location.href = waApp;
-        setTimeout(function(){ window.location.href = waWeb; }, 700);
-      });
+        setTimeout(function(){
+          // After 1.2 sec, if still not redirected (likely WhatsApp not installed), open web
+          window.location.href = waWeb;
+          setTimeout(fallback, 1600);
+        }, 1200);
+      }else{
+        // On desktop always go to WhatsApp Web
+        window.open(waWeb, '_blank');
+        setTimeout(fallback, 1200);
+      }
+    });
 
-      try {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        let mm = today.getMonth() + 1; if(mm < 10) mm = '0' + mm;
-        let dd = today.getDate(); if(dd < 10) dd = '0' + dd;
-        dateInput.value = yyyy + '-' + mm + '-' + dd;
-      } catch(e){}
-    })();
+    // Default date = today
+    try{
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      let mm = today.getMonth() + 1; if(mm < 10) mm = '0' + mm;
+      let dd = today.getDate(); if(dd < 10) dd = '0' + dd;
+      dateInput.value = yyyy + '-' + mm + '-' + dd;
+    }catch(e){}
   </script>
 </body>
 </html>
