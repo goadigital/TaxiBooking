@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <!-- Variables for customer update -->
+  <!-- Update these variables for customer: -->
   <script>
-    var whatsappNo = '917878781984';
-    var previewImage = '917878781984-Cover Page.png';
+    var whatsappNo = '917878781984'; // Update WhatsApp Number
+    var previewImage = 'thumbnail.png'; // Update Image Path (shown in link preview)
   </script>
-  <!-- Social sharing preview image -->
-  <meta property="og:image" content="917878781984-Cover Page.png" />
+  <!-- WhatsApp preview when link is shared -->
+  <meta property="og:image" content="thumbnail.png" />
   <meta property="og:image:width" content="720" />
   <meta property="og:image:height" content="405" />
-  <meta property="og:title" content="Taxi/Cab Booking" />
-  <meta property="og:description" content="Book your taxi instantly" />
+  <meta property="og:title" content="Taxi Booking — III Tour and Travel" />
+  <meta property="og:description" content="Book your taxi instantly with III Tour and Travel" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Taxi Booking</title>
+  <title>Taxi Booking — III Tour and Travel</title>
   <style>
     :root {
       --accent:#0b7;
@@ -152,7 +152,7 @@
 <body>
   <div class="container">
     <div class="hero-wrap" aria-hidden="true">
-      <img src="thumbnail.png" alt="Tour & Travel — banner">
+      <img src="thumbnail.png" alt="III Tour & Travel — banner">
     </div>
     <main class="card" role="main" aria-labelledby="formTitle">
       <h1 id="formTitle">Taxi Booking Request</h1>
@@ -161,7 +161,7 @@
         <label for="custName" class="required">Name</label>
         <input id="custName" name="custName" type="text" placeholder="Your full name" required>
         <label for="custMobile" class="required">Mobile no</label>
-        <input id="custMobile" name="custMobile" type="tel" placeholder="e.g. 9422xxxxx" pattern="[0-9+()\s-]{6,}" required>
+        <input id="custMobile" name="custMobile" type="tel" placeholder="e.g. 9178xxxxxxx" pattern="[0-9+()\s-]{6,}" required>
         <label for="date" class="required">Pick date</label>
         <input id="date" name="date" type="date" required>
         <label for="time" class="required">Pick up time</label>
@@ -187,7 +187,7 @@
         <label for="drop" class="required">Drop location</label>
         <input id="drop" name="drop" type="text" placeholder="Enter drop address or landmark" required>
         <button type="submit" class="btn">Send to WhatsApp</button>
-        <p class="note">This opens WhatsApp (Personal or Business) on mobile. On desktop it will open WhatsApp Web if available. (ver:1.07)</p>
+        <p class="note">This opens WhatsApp (Personal or Business) on mobile. On desktop it will open WhatsApp Web if available.</p>
       </form>
       <div class="footer">
         Developed by:
@@ -195,7 +195,7 @@
       </div>
       <div class="wa-fallback" id="waFallback">
         WhatsApp is not installed or not opened in browser.<br>
-        No Worry, You can install WhatsApp or open WhatsApp on, or Click below to call us.<br>
+        You need to install WhatsApp or open WhatsApp Web in your browser.<br>
         <a class="wa-call" id="callBtn" target="_blank" rel="noopener noreferrer">Call Now</a>
       </div>
     </main>
@@ -233,13 +233,8 @@
     form.addEventListener('submit', function(e){
       e.preventDefault();
 
-      // Collect missing fields
-      let missing = [];
-      if(!custName.value.trim()) missing.push('Name');
-      if(!custMobile.value.trim()) missing.push('Mobile no');
-      if(!dateInput.value) missing.push('Pick date');
-      if(missing.length){
-        alert(missing.map(f => 'UPDATE : ' + f).join(', '));
+      if(!custName.value.trim() || !custMobile.value.trim() || !dateInput.value){
+        alert('Please complete required fields: Name, Mobile and Pick date.');
         return;
       }
 
@@ -269,22 +264,27 @@
       function fallback(){
         if(attempted) return;
         attempted = true;
+        // Show fallback message & call button
         waFallback.style.display = 'block';
       }
 
+      // Try native app, then fallback to web after short delay
       let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
       if(isMobile){
         window.location.href = waApp;
         setTimeout(function(){
+          // After 1.2 sec, if still not redirected (likely WhatsApp not installed), open web
           window.location.href = waWeb;
           setTimeout(fallback, 1600);
         }, 1200);
       }else{
+        // On desktop always go to WhatsApp Web
         window.open(waWeb, '_blank');
         setTimeout(fallback, 1200);
       }
     });
 
+    // Default date = today
     try{
       const today = new Date();
       const yyyy = today.getFullYear();
