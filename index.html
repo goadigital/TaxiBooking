@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <!-- Variables for customer update -->
+  <!-- Update these variables for customer: -->
   <script>
-    var whatsappNo = '917878781984';
-    var previewImage = 'thumbnail.png';
+    var whatsappNo = '917878781984'; // Update WhatsApp Number
+    var previewImage = 'thumbnail.png'; // Update Image Path (shown in link preview)
   </script>
-  <!-- Social sharing preview image -->
+  <!-- WhatsApp preview when link is shared -->
   <meta property="og:image" content="thumbnail.png" />
   <meta property="og:image:width" content="720" />
   <meta property="og:image:height" content="405" />
@@ -233,13 +233,8 @@
     form.addEventListener('submit', function(e){
       e.preventDefault();
 
-      // Collect missing fields
-      let missing = [];
-      if(!custName.value.trim()) missing.push('Name');
-      if(!custMobile.value.trim()) missing.push('Mobile no');
-      if(!dateInput.value) missing.push('Pick date');
-      if(missing.length){
-        alert(missing.map(f => 'UPDATE : ' + f).join(', '));
+      if(!custName.value.trim() || !custMobile.value.trim() || !dateInput.value){
+        alert('Please complete required fields: Name, Mobile and Pick date.');
         return;
       }
 
@@ -269,22 +264,27 @@
       function fallback(){
         if(attempted) return;
         attempted = true;
+        // Show fallback message & call button
         waFallback.style.display = 'block';
       }
 
+      // Try native app, then fallback to web after short delay
       let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
       if(isMobile){
         window.location.href = waApp;
         setTimeout(function(){
+          // After 1.2 sec, if still not redirected (likely WhatsApp not installed), open web
           window.location.href = waWeb;
           setTimeout(fallback, 1600);
         }, 1200);
       }else{
+        // On desktop always go to WhatsApp Web
         window.open(waWeb, '_blank');
         setTimeout(fallback, 1200);
       }
     });
 
+    // Default date = today
     try{
       const today = new Date();
       const yyyy = today.getFullYear();
