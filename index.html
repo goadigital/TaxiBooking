@@ -296,3 +296,13 @@
 </body>
 </html>
 
+<script>
+  document.addEventListener('contextmenu', event => event.preventDefault());
+  document.onkeydown = function(e) {
+    if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's')) {
+      return false;
+    }
+  }
+</script>
+
+
